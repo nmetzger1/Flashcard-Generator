@@ -10,21 +10,15 @@ var fileManagement = module.exports = {
         });
     },
     //Reads cards from library
-    consoleLogCardLibrary: function (func) {
+    readCardLibrary: function (array, func) {
         fs.readFile("card-library.txt", "utf8", function (err, data) {
             if (err) {
                 throw new Error(err);
             }
 
-            dataArray = data.split("\r\n");
+            array = data.split("\r\n");
 
-            for(var i = 0; i < dataArray.length - 1; i++){
-                console.log(JSON.parse(dataArray[i]));
-                console.log("------------------------");
-            }
-
-            //Run function after displaying info
-            func();
+            func(array);
         });
     }
 

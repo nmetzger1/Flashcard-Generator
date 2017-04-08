@@ -1,6 +1,12 @@
 var fileManagement = require("./fileSystem.js");
 
 function ClozeCard(text, cloze) {
+
+    //error case
+    if(typeof text != "string" || typeof cloze != "string"){
+        throw new Error("Please use strings when declaring 'front' and 'back' properties");
+    }
+
     //Check if "new" was used when invoked
     if(this instanceof ClozeCard) {
         //Determine if cloze text in found inside of full text

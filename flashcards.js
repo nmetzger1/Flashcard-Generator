@@ -1,8 +1,11 @@
+//Required Files / Packages
 var fileManagement = require("./fileSystem");
 var inquirer = require("inquirer");
-var dataArray = [];
 var BasicCard = require("./basicCard.js");
 var ClozeCard = require("./clozeCard.js");
+
+//Global Variables
+var cardArray = [];
 
 
 function goToMenu() {
@@ -20,12 +23,23 @@ function goToMenu() {
                 addCard();
                 return;
             case "View All Cards":
-                fileManagement.consoleLogCardLibrary(goToMenu);
+                fileManagement.readCardLibrary(cardArray, outputLibrary);
                 return;
             case "Try Random Card":
-                playGame();
+                fileManagement.readCardLibrary(cardArray, playGame);
         }
     })
+}
+
+function outputLibrary(cardArray) {
+
+    for(var i = 0; i < cardArray.length - 1; i++){
+        console.log(JSON.parse(cardArray[i]));
+        console.log("------------------------");
+    }
+
+    //Return to menu
+    goToMenu();
 }
 
 function addCard() {
@@ -86,68 +100,53 @@ function addCard() {
     })
 }
 
-function playGame() {
+function playGame(cardArray) {
 
-    fs.readFile("card-library.txt", "utf8", function (err, data) {
-        if (err) {
-            throw new Error(err);
-        }
+    //Gets a random number between 0 and current number of cards
+    var randomNumber = Math.floor(Math.random() * (cardArray.length - 1));  //-1 is for the empty line at the end of the page
 
-        dataArray = data.split("\r\n");
+    //Grabs a card object based on random number
+    var flashCard = JSON.parse(cardArray[randomNumber]);
 
-        //Gets a random number between 0 and current number of cards
-        var randomNumber = Math.floor(Math.random() * (dataArray.length - 1));  //-1 is for the empty line at the end of the page
+    if(flashCard.front === undefined){
 
-        //Grabs a card object based on random number
-        var flashCard = JSON.parse(dataArray[randomNumber]);
+        var demoCard = new ClozeCard(flashCard.fullText, flashCard.cloze);
 
-        console.log("type of", typeof flashCard);
+        inquirer.prompt([
+            {
+                type: "input",
+                message: demoCard.partialText(),
+                name: "question"
+            }
+        ]).then(function (answer) {
+            if(answer.question === demoCard.cloze){
+                console.log("That is correct!");
+            }
+            else {
+                console.log("I'm sorry.  The correct answer was: " + demoCard.cloze);
+            }
 
+            goToMenu();
+        })
+    }
+    else {
+        inquirer.prompt([
+            {
+                type: "input",
+                message: flashCard.front,
+                name: "question"
+            }
+        ]).then(function (answer) {
+            if(answer.question === flashCard.back){
+                console.log("That is correct!");
+            }
+            else {
+                console.log("I'm sorry.  The correct answer was: " + flashCard.back);
+            }
 
-        if(flashCard.front === undefined){
-
-            var demoCard = new ClozeCard(flashCard.fullText, flashCard.cloze);
-
-            inquirer.prompt([
-                {
-                    type: "input",
-                    message: demoCard.partialText(),
-                    name: "question"
-                }
-            ]).then(function (answer) {
-                if(answer.question === demoCard.cloze){
-                    console.log("That is correct!");
-                }
-                else {
-                    console.log("I'm sorry.  The correct answer was: " + demoCard.cloze);
-                }
-
-                goToMenu();
-            })
-        }
-        else {
-            inquirer.prompt([
-                {
-                    type: "input",
-                    message: flashCard.front,
-                    name: "question"
-                }
-            ]).then(function (answer) {
-                if(answer.question === flashCard.back){
-                    console.log("That is correct!");
-                }
-                else {
-                    console.log("I'm sorry.  The correct answer was: " + flashCard.back);
-                }
-
-                goToMenu();
-            })
-        }
-
-
-    });
+            goToMenu();
+        })
+    }
 }
-
-
 
 goToMenu();
