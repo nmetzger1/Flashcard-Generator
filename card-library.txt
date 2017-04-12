@@ -1,3 +1,5 @@
 {"front":"What is the airspeed velocity of an unladen swallow?","back":"11 m/s"}
 {"front":"What is 2 + 2?","back":"4"}
 {"front":"What is your favorite color?","back":"yellow"}
+{"cloze":"flashcard","fullText":"This is a flashcard"}
+{"cloze":"flashcard","fullText":"This is a flashcard"}
